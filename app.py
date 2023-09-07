@@ -382,14 +382,20 @@ def feedback():
         return "ok", 200
 
     try:
-        now_utc = datetime.now(timezone.utc)
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
+        print(authenticated_user)
+
         params = {key: request.json.get(key) for key in request.json.keys()}
         doc_list = params.pop("top_docs")
         doc_list = json.dumps(doc_list)
         params["top_docs"] = doc_list
+        now_utc = datetime.now(timezone.utc)
         params["Time"] = now_utc
         params["PartitionKey"] = params.get("question")
         params["RowKey"] = params.get("answer_id")
+        params["user"] = user_id
+        print(params)
         table_client.upsert_entity(params)
     except Exception as e:
         return str(e), 500
