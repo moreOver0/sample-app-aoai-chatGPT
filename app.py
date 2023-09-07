@@ -383,7 +383,6 @@ def feedback():
 
     try:
         authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-        print(authenticated_user)
 
         params = {key: request.json.get(key) for key in request.json.keys()}
         doc_list = params.pop("top_docs")
@@ -397,6 +396,7 @@ def feedback():
         print(params)
         table_client.upsert_entity(params)
     except Exception as e:
+        print(str(e))
         return str(e), 500
     return "ok", 200
 
