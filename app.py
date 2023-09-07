@@ -367,7 +367,8 @@ def conversation_internal(request_body):
 @app.route("/feedback", methods=["POST"])
 def feedback():
     print(request.json)
-    
+    return "ok", 200
+
 
 ## Conversation History API ##
 @app.route("/history/generate", methods=["POST"])
