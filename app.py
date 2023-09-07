@@ -1,9 +1,11 @@
 import json
 import logging
 import os
+from datetime import datetime, timezone
 
 import openai
 import requests
+from azure.data.tables import TableServiceClient
 from azure.identity import DefaultAzureCredential
 from dotenv import load_dotenv
 from flask import Flask, Response, request, jsonify, send_from_directory
@@ -94,6 +96,15 @@ if AZURE_COSMOSDB_DATABASE and AZURE_COSMOSDB_ACCOUNT and AZURE_COSMOSDB_CONVERS
     except Exception as e:
         logging.exception("Exception in CosmosDB initialization", e)
         cosmos_conversation_client = None
+
+# Feedback storing
+AZURE_STORAGE_ACCOUNT_CONN_STRING = os.environ.get("AZURE_STORAGE_ACCOUNT_CONN_STRING")
+AZURE_STORAGE_FEEDBACK_TABLE_NAME = os.environ.get("AZURE_STORAGE_FEEDBACK_TABLE_NAME")
+
+table_client = None
+if AZURE_STORAGE_ACCOUNT_CONN_STRING and AZURE_STORAGE_FEEDBACK_TABLE_NAME:
+    table_service = TableServiceClient.from_connection_string(AZURE_STORAGE_ACCOUNT_CONN_STRING)
+    table_client = table_service.get_table_client(AZURE_STORAGE_FEEDBACK_TABLE_NAME)
 
 
 def is_chat_model():
@@ -367,6 +378,21 @@ def conversation_internal(request_body):
 @app.route("/feedback", methods=["POST"])
 def feedback():
     print(request.json)
+    if not table_client:
+        return "ok", 200
+
+    try:
+        now_utc = datetime.now(timezone.utc)
+        params = {key: request.json.get(key) for key in request.json.keys()}
+        doc_list = params.pop("top_docs")
+        doc_list = json.dumps(doc_list)
+        params["top_docs"] = doc_list
+        params["Time"] = now_utc
+        params["PartitionKey"] = params.get("question")
+        params["RowKey"] = params.get("answer_id")
+        table_client.upsert_entity(params)
+    except Exception as e:
+        return str(e), 500
     return "ok", 200
 
 
