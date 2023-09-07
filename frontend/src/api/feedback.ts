@@ -24,7 +24,7 @@ export type Feedback = {
     answer_id: string | null;
     answer: string | null;
     top_docs: DocFeedback[];
-    // allow_contact: boolean | null;
+    user: string | null;
 }
 
 export async function feedbackApi(feedback: Feedback): Promise<void> {

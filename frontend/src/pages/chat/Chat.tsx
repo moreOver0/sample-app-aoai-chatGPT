@@ -52,7 +52,7 @@ const Chat = () => {
     const [isCitationPanelOpen, setIsCitationPanelOpen] = useState<boolean>(false);
     const abortFuncs = useRef([] as AbortController[]);
     const [showAuthMessage, setShowAuthMessage] = useState<boolean>(true);
-    const [userInfo, setUserInfo] = useState<UserInfo[]>();
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [processMessages, setProcessMessages] = useState<messageStatus>(messageStatus.NotRunning);
     const [clearingChat, setClearingChat] = useState<boolean>(false);
@@ -93,11 +93,13 @@ const Chat = () => {
 
     const getUserInfoList = async () => {
         const userInfoList = await getUserInfo();
-        setUserInfo(userInfoList)
         if (userInfoList.length === 0 && window.location.hostname !== "127.0.0.1") {
             setShowAuthMessage(true);
         } else {
             setShowAuthMessage(false);
+            if (userInfoList.length >= 1) {
+                setUserInfo(userInfoList[0])
+            }
         }
     }
 
@@ -726,7 +728,7 @@ const Chat = () => {
                 onDismiss={() => setIsFeedbackPanelOpen(false)}
                 feedbackMessageIndex={feedbackMessageIndex}
                 chatMessages={messages}
-                allowContact={false}
+                user={userInfo}
             />
         </div>
     );

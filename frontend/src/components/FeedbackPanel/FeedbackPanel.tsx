@@ -2,7 +2,7 @@ import {Checkbox, DefaultButton, Label, Panel, PrimaryButton, Rating, RatingSize
 import {useEffect, useId, useState} from "react";
 
 import styles from "./FeedbackPanel.module.css";
-import {ChatMessage, Citation, ToolMessageContent} from "../../api";
+import {ChatMessage, Citation, ToolMessageContent, UserInfo} from "../../api";
 import {DocFeedback, Feedback, feedbackApi} from "../../api/feedback";
 
 export interface IFeedbackPanelProps {
@@ -10,7 +10,7 @@ export interface IFeedbackPanelProps {
     onDismiss: () => void;
     feedbackMessageIndex: number;
     chatMessages: ChatMessage[];
-    allowContact: boolean;
+    user: UserInfo | null;
 }
 
 export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
@@ -18,7 +18,7 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
                                                                  onDismiss,
                                                                  feedbackMessageIndex,
                                                                  chatMessages,
-                                                                 allowContact,
+                                                                 user,
                                                              }) => {
     const [feedback, setFeedback] = useState<Feedback>({
         overall_response_quality: 3,
@@ -41,7 +41,7 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
         answer_id: "",
         answer: "",
         top_docs: [],
-        // allow_contact: allowContact,
+        user: user?.user_id ?? "",
     });
 
     const getRoleMessage = (role: "user" | "tool" | "assistant"): ChatMessage | null => {
@@ -95,7 +95,6 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
             answer_id: answerId,
             answer: answer,
             top_docs: topDocs,
-            // allow_contact: allowContact,
         });
     }, [isOpen]);
 
@@ -212,11 +211,6 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
                 className={styles.TextField}
                 onChange={(_ev, value) => setFeedback({...feedback, case_number: value ?? ""})}
             />
-            {/*             <Checkbox
-                label="Is it okay to contact me about this feedback?"
-                className={styles.checkBox}
-                onChange={(_ev, value) => setFeedback({ ...feedback, allow_contact: !!value })}
-            /> */}
         </Panel>
     );
 };
