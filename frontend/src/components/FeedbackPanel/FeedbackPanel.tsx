@@ -2,7 +2,7 @@ import {Checkbox, DefaultButton, Label, Panel, PrimaryButton, Rating, RatingSize
 import {useEffect, useId, useState} from "react";
 
 import styles from "./FeedbackPanel.module.css";
-import {ChatMessage, Citation, ToolMessageContent, UserInfo} from "../../api";
+import {ChatMessage, Citation, ToolMessageContent} from "../../api";
 import {DocFeedback, Feedback, feedbackApi} from "../../api/feedback";
 
 export interface IFeedbackPanelProps {
@@ -10,7 +10,6 @@ export interface IFeedbackPanelProps {
     onDismiss: () => void;
     feedbackMessageIndex: number;
     chatMessages: ChatMessage[];
-    user: UserInfo | null;
 }
 
 export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
@@ -18,7 +17,6 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
                                                                  onDismiss,
                                                                  feedbackMessageIndex,
                                                                  chatMessages,
-                                                                 user,
                                                              }) => {
     const [feedback, setFeedback] = useState<Feedback>({
         overall_response_quality: 3,
@@ -41,7 +39,6 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
         answer_id: "",
         answer: "",
         top_docs: [],
-        user: user?.user_id ?? "",
     });
 
     const getRoleMessage = (role: "user" | "tool" | "assistant"): ChatMessage | null => {

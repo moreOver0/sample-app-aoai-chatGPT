@@ -383,7 +383,6 @@ def feedback():
 
     try:
         authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-        user_id = authenticated_user['user_principal_id']
         print(authenticated_user)
 
         params = {key: request.json.get(key) for key in request.json.keys()}
@@ -394,7 +393,7 @@ def feedback():
         params["Time"] = now_utc
         params["PartitionKey"] = params.get("question")
         params["RowKey"] = params.get("answer_id")
-        params["user"] = user_id
+        params["user"] = authenticated_user['user_name']
         print(params)
         table_client.upsert_entity(params)
     except Exception as e:

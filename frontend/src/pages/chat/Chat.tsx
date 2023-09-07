@@ -728,7 +728,6 @@ const Chat = () => {
                 onDismiss={() => setIsFeedbackPanelOpen(false)}
                 feedbackMessageIndex={feedbackMessageIndex}
                 chatMessages={messages}
-                user={userInfo}
             />
         </div>
     );
