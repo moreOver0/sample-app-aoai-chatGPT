@@ -390,7 +390,7 @@ def feedback():
         params["top_docs"] = doc_list
         now_utc = datetime.now(timezone.utc)
         params["Time"] = now_utc
-        params["PartitionKey"] = params.get("question")
+        params["PartitionKey"] = params.get("question_id")
         params["RowKey"] = params.get("answer_id")
         params["user"] = authenticated_user['user_name']
         print(params)
