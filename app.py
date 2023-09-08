@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import traceback
 from datetime import datetime, timezone
 
 import openai
@@ -12,6 +13,7 @@ from flask import Flask, Response, request, jsonify, send_from_directory
 
 from backend.auth.auth_utils import get_authenticated_user_details
 from backend.history.cosmosdbservice import CosmosConversationClient
+from metrics import log
 
 load_dotenv()
 
@@ -364,13 +366,16 @@ def conversation():
 
 def conversation_internal(request_body):
     try:
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        log.trace_count("Conversation", 1, user=authenticated_user['user_name'])
+
         use_data = should_use_data()
         if use_data:
             return conversation_with_data(request_body)
         else:
             return conversation_without_data(request_body)
     except Exception as e:
-        logging.exception("Exception in /conversation")
+        log.logger().error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 
@@ -393,10 +398,10 @@ def feedback():
         params["PartitionKey"] = params.get("question_id")
         params["RowKey"] = params.get("answer_id")
         params["user"] = authenticated_user['user_name']
-        print(params)
+        log.trace_count("GetFeedback", 1, feedback_content=params, user=authenticated_user['user_name'])
         table_client.upsert_entity(params)
     except Exception as e:
-        print(str(e))
+        log.logger().error(traceback.format_exc())
         return str(e), 500
     return "ok", 200
 
