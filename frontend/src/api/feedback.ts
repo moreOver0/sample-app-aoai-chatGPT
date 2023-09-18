@@ -18,7 +18,6 @@ export type Feedback = {
     outdated: boolean | null;
     repetitive: boolean | null;
     fantastic: boolean | null;
-    case_number: string | null;
     question_id: string | null;
     question: string | null;
     answer_id: string | null;

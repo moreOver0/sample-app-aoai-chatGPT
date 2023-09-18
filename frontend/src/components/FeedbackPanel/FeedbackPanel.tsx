@@ -33,7 +33,6 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
         outdated: false,
         repetitive: false,
         fantastic: false,
-        case_number: "",
         question_id: "",
         question: "",
         answer_id: "",
@@ -202,11 +201,6 @@ export const FeedbackPanel: React.FC<IFeedbackPanelProps> = ({
                 label="Fantastic!"
                 className={styles.checkBox}
                 onChange={(_ev, value) => setFeedback({...feedback, fantastic: !!value})}
-            />
-            <TextField
-                label="Case number"
-                className={styles.TextField}
-                onChange={(_ev, value) => setFeedback({...feedback, case_number: value ?? ""})}
             />
         </Panel>
     );

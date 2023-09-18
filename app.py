@@ -382,7 +382,6 @@ def conversation_internal(request_body):
 ## Feedback ##
 @app.route("/feedback", methods=["POST"])
 def feedback():
-    print(request.json)
     if not table_client:
         return "ok", 200
 
